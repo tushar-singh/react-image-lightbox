@@ -50,6 +50,7 @@ class ReactImageLightbox extends Component {
     constructor(props) {
         super(props);
 
+        this.__images = {};
         this.state = {
             //-----------------------------
             // Animation
@@ -1093,10 +1094,13 @@ class ReactImageLightbox extends Component {
         };
 
         inMemoryImage.onload = function onLoad() {
+            const dvp = window.devicePixelRatio || 1;
             that.imageCache[imageSrc] = {
                 loaded: true,
                 width:  this.width,
                 height: this.height,
+                maxWidth: this.naturalWidth / dvp,
+                maxHeight: this.naturalHeight / dvp,
             };
 
             done();
@@ -1339,6 +1343,11 @@ class ReactImageLightbox extends Component {
                     </div>
                 );
             } else {
+                const imagekey = imageSrc + keyEndings[srcType];
+                if (this.imageCache[imageSrc]) {
+                    imageStyle.maxWidth = this.imageCache[imageSrc].maxWidth;
+                    imageStyle.maxHeight = this.imageCache[imageSrc].maxHeight;
+                }
                 images.push(
                     <img
                         className={`${imageClass} ${styles.image}`}
@@ -1347,7 +1356,6 @@ class ReactImageLightbox extends Component {
                         onDragStart={e => e.preventDefault()}
                         style={imageStyle}
                         src={imageSrc}
-                        key={imageSrc + keyEndings[srcType]}
                         alt={(typeof imageTitle === 'string' ? imageTitle : translate('Image'))}
                         draggable={false}
                     />
