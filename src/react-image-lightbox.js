@@ -104,6 +104,7 @@ class ReactImageLightbox extends Component {
   constructor(props) {
     super(props);
 
+    this.__images = {};
     this.state = {
       //-----------------------------
       // Animation
@@ -1146,10 +1147,13 @@ class ReactImageLightbox extends Component {
     };
 
     inMemoryImage.onload = () => {
+      const dvp = window.devicePixelRatio || 1;
       this.imageCache[imageSrc] = {
         loaded: true,
         width: inMemoryImage.width,
         height: inMemoryImage.height,
+        maxWidth: this.naturalWidth / dvp,
+        maxHeight: this.naturalHeight / dvp,
       };
 
       done();
@@ -1338,6 +1342,11 @@ class ReactImageLightbox extends Component {
           );
 
         // Fall back to loading icon if the thumbnail has not been loaded
+        const imagekey = imageSrc + keyEndings[srcType];
+        if (this.imageCache[imageSrc]) {
+          imageStyle.maxWidth = this.imageCache[imageSrc].maxWidth;
+          imageStyle.maxHeight = this.imageCache[imageSrc].maxHeight;
+        }
         images.push(
           <div
             className={`${imageClass} ${styles.image} ril-not-loaded`}
